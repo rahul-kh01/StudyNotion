@@ -1,0 +1,69 @@
+name: Deploy StudyNotion Server
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+      - '.github/workflows/lambda_deploy.yml'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+      PORT: ${{ secrets.PORT }}
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
+      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+      FRONTEND_URL2: ${{ secrets.FRONTEND_URL2 }}
+      MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      MAIL_USER: ${{ secrets.MAIL_USER }}
+      MAIL_PASS: ${{ secrets.MAIL_PASS }}
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET}}
+      FOLDER_NAME: ${{ secrets.FOLDER_NAME }}
+      CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+      API_KEY: ${{ secrets.API_KEY }}
+      API_SECRET: ${{ secrets.API_SECRET }}
+      RAZORPAY_KEY: ${{ secrets.RAZORPAY_KEY }}
+      RAZORPAY_SECRET: ${{ secrets.RAZORPAY_SECRET }}
+      ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./server
+
+      # Step 4: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      # Step 5: Set up Serverless Framework
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      # Step 6: Deploy to AWS
+      - name: Deploy Service
+        run: sls deploy --stage production
+        working-directory: ./server
+
+      # Step 7: Verify Deployment
+      - name: Verify Deployment
+        run: sls info --stage production
+        working-directory: ./server

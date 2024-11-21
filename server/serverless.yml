@@ -1,0 +1,32 @@
+service: studynotion-server
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-south-1
+  environment:
+    PORT: ${env:PORT}
+    DATABASE_URI: ${env:DATABASE_URI}
+    FRONTEND_URL: ${env:FRONTEND_URL}
+    FRONTEND_URL2: ${env:FRONTEND_URL2}
+    MAIL_HOST: ${env:MAIL_HOST}
+    MAIL_USER: ${env:MAIL_USER}
+    MAIL_PASS: ${env:MAIL_PASS}
+    ACCESS_TOKEN_SECRET: ${env:ACCESS_TOKEN_SECRET}
+    REFRESH_TOKEN_SECRET: ${env:REFRESH_TOKEN_SECRET}
+    FOLDER_NAME: ${env:FOLDER_NAME}
+    CLOUD_NAME: ${env:CLOUD_NAME}
+    API_KEY: ${env:API_KEY}
+    API_SECRET: ${env:API_SECRET}
+    RAZORPAY_KEY: ${env:RAZORPAY_KEY}
+    RAZORPAY_SECRET: ${env:RAZORPAY_SECRET}
+    ADMIN_KEY: ${env:ADMIN_KEY}
+
+functions:
+  app:
+    handler: index.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
